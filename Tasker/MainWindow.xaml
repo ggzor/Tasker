@@ -6,7 +6,11 @@
         xmlns:local="clr-namespace:Tasker"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <local:TaskerViewModel x:Key="ViewModel"/>
+    </Window.Resources>
+    
     <Grid>
-        
+        <ListView/>
     </Grid>
 </Window>
