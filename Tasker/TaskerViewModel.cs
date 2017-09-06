@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Tasker
     public class TaskerViewModel : ValidatableModel
     {
 
-        public static readonly string TasksPath = Directory.GetCurrentDirectory();
+        public static readonly string TasksPath = "C:/Tasker/";
 
         public static string CurrentFilePath => Path.Combine(TasksPath, DateTime.Today.ToString("yyyy-MM-dd") + ".json");
 
@@ -45,6 +46,17 @@ namespace Tasker
         {
             GetTodayTasksCommand = new DelegateCommand(async () => await GetTodayTasks());
             SaveTasksCommand = new DelegateCommand(async () => await SaveTasks());
+
+            async void LoadTasks() => await GetTodayTasks();
+
+            if (File.Exists(CurrentFilePath))
+                LoadTasks();
+            else
+            {
+                StatusBarText = "No tasks for today were found at the current directory.";
+
+                Directory.CreateDirectory(TasksPath);
+            }
         }
 
         public async Task GetTodayTasks()
@@ -68,7 +80,7 @@ namespace Tasker
             {
                 try
                 {
-                    var tasks = JsonConvert.DeserializeObject<Core.Task[]>(text);
+                    var tasks = JsonConvert.DeserializeObject<List<Core.Task>>(text);
 
                     todayTasks.Clear();
                     tasks.ForEach(TodayTasks.Add);
@@ -99,7 +111,7 @@ namespace Tasker
 
             try
             {
-                var text = JsonConvert.SerializeObject(TodayTasks.ToArray(), Formatting.Indented);
+                var text = JsonConvert.SerializeObject(TodayTasks.ToList(), Formatting.Indented);
 
                 await SaveToFile(CurrentFilePath, text);
             }
