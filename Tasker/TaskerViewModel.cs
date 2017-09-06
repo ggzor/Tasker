@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Waf.Applications;
 using System.Waf.Foundation;
@@ -15,17 +16,26 @@ namespace Tasker
     public class TaskerViewModel : ValidatableModel
     {
 
-        public static readonly DirectoryInfo TasksPath = new DirectoryInfo("");
+        public static readonly string TasksPath = Directory.GetCurrentDirectory();
 
-        public static string CurrentFilePath => Path.Combine(TasksPath.FullName, DateTime.Today.ToString("yyyy-MM-dd") + ".json");
+        public static string CurrentFilePath => Path.Combine(TasksPath, DateTime.Today.ToString("yyyy-MM-dd") + ".json");
 
         private ObservableCollection<Core.Task> todayTasks = new ObservableCollection<Core.Task>();
+
+        private string statusBarText = "Ready.";
 
         public ObservableCollection<Core.Task> TodayTasks
         {
             get { return todayTasks; }
-            set { todayTasks = value; }
+            set { SetProperty(ref todayTasks, value); }
         }
+
+        public string StatusBarText
+        {
+            get { return statusBarText; }
+            set { SetProperty(ref statusBarText, value); }
+        }
+
 
         public ICommand GetTodayTasksCommand { get; }
 
@@ -37,9 +47,9 @@ namespace Tasker
             SaveTasksCommand = new DelegateCommand(async () => await SaveTasks());
         }
 
-        public async System.Threading.Tasks.Task GetTodayTasks()
+        public async Task GetTodayTasks()
         {
-            Task<string> ReadFile(string path) => System.Threading.Tasks.Task.Run(() =>
+            Task<string> ReadFile(string path) => Task.Run(() =>
             {
                 try
                 {
@@ -60,19 +70,20 @@ namespace Tasker
                 {
                     var tasks = JsonConvert.DeserializeObject<Core.Task[]>(text);
 
+                    todayTasks.Clear();
                     tasks.ForEach(TodayTasks.Add);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("An error has ocurred while deserializing the tasks: " + ex.Message);
+                    StatusBarText = "An error has ocurred while deserializing the tasks: " + ex.Message;
                 }
             }
         }
 
 
-        public async System.Threading.Tasks.Task SaveTasks()
+        public async Task SaveTasks()
         {
-            async System.Threading.Tasks.Task SaveToFile(string path, string value)
+            async Task SaveToFile(string path, string value)
             {
                 try
                 {
@@ -82,7 +93,7 @@ namespace Tasker
                 }
                 catch (IOException ex)
                 {
-                    Console.WriteLine("An error has ocurred while writing the file: " + ex.Message);
+                    StatusBarText = "An error has ocurred while writing the file: " + ex.Message;
                 }
             }
 
@@ -94,7 +105,7 @@ namespace Tasker
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error has ocurred while serializing the tasks: " + ex.Message);
+                StatusBarText = "An error has ocurred while serializing the tasks: " + ex.Message;
             }
         }
     }

@@ -20,9 +20,18 @@ namespace Tasker
     /// </summary>
     public partial class MainWindow : Window
     {
+        public TaskerViewModel ViewModel { get; }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            ViewModel = Parent.DataContext as TaskerViewModel;
+        }
+
+        private async void AddTask(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

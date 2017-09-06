@@ -9,8 +9,30 @@
     <Window.Resources>
         <local:TaskerViewModel x:Key="ViewModel"/>
     </Window.Resources>
-    
-    <Grid>
-        <ListView/>
+
+    <Grid Name="Parent" DataContext="{StaticResource ViewModel}" Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Description:" VerticalAlignment="Center"/>
+            <TextBox x:Name="TaskDescription" TextWrapping="WrapWithOverflow" 
+                     VerticalContentAlignment="Center" MinWidth="200"/>
+            <Button Content="Add" Padding="10 5" Click="AddTask"/>
+            <Button Content="Edit" Padding="10 5"/>
+        </StackPanel>
+
+        <ListView Grid.Row="1" Margin="0 10" ItemsSource="{Binding TodayTasks}"/>
+
+        <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Content="Switch completed" Padding="10 5"/>
+            <Button Content="Delete" Padding="10 5"/>
+        </StackPanel>
+        
+        <TextBlock Grid.Row="3" Text="{Binding StatusBarText}"/>
     </Grid>
 </Window>
