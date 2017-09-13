@@ -1,11 +1,14 @@
-﻿<Window x:Class="Tasker.MainWindow"
+﻿<metro:MetroWindow x:Class="Tasker.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Tasker"
         xmlns:core="clr-namespace:Tasker.Core;assembly=Tasker.Core"
         mc:Ignorable="d"
+        BorderThickness="0" GlowBrush="Black"
         Title="Tasker" Height="350" Width="525">
     <Window.Resources>
         <local:TaskerViewModel x:Key="ViewModel"/>
@@ -19,20 +22,38 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Description:" VerticalAlignment="Center"/>
-            <TextBox x:Name="TaskDescription" TextWrapping="WrapWithOverflow" 
+        <StackPanel>
+            <TextBox x:Name="TaskDescription" Tag="Task Description" TextWrapping="WrapWithOverflow" 
                      VerticalContentAlignment="Center" MinWidth="200"/>
-            <Button Content="Add" Padding="10 5" Click="AddTask" IsDefault="True"/>
-            <Button Content="Edit" Padding="10 5" Click="EditTask"
-                    IsEnabled="{Binding ElementName=List, Path=SelectedItems.Count}"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0 8" HorizontalAlignment="Right">
+                <Button Content="Edit" Click="EditTask"
+                        IsEnabled="{Binding ElementName=List, Path=SelectedItems.Count}"/>
+
+                <Button Content="Add"  Margin="5 0" 
+                        Click="AddTask" IsDefault="True" 
+                        Style="{StaticResource HighlightButton}"/>
+            </StackPanel>
         </StackPanel>
 
         <ListView Name="List" Grid.Row="1" Margin="0 10" ItemsSource="{Binding TodayTasks}"
                   SelectionMode="Single" SelectionChanged="SelectionChanged">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type core:Task}">
-                    <TextBlock Text="{Binding Representation}"/>
+                    <Grid Name="Container" Height="40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="36"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="6"/>
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox Grid.Column="1" IsChecked="{Binding Completed}" VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Column="2" FontFamily="Segoe UI Semilight" FontSize="16"
+                                   Text="{Binding Description}"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
@@ -40,10 +61,10 @@
         <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button Content="Switch completed" Padding="10 5" Click="SwitchTask"
                     IsEnabled="{Binding ElementName=List, Path=SelectedItems.Count}"/>
-            <Button Content="Delete" Padding="10 5" Click="DeleteTask"
+            <Button Content="Delete" Padding="10 5" Click="DeleteTask" Margin="5 0"
                     IsEnabled="{Binding ElementName=List, Path=SelectedItems.Count}"/>
         </StackPanel>
 
-        <TextBlock Grid.Row="3" Text="{Binding StatusBarText}"/>
+        <TextBlock Grid.Row="3" Margin="0 10 0 0" Text="{Binding StatusBarText}" Style="{StaticResource p}"/>
     </Grid>
-</Window>
+</metro:MetroWindow>

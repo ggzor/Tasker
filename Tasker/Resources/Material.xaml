@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="MaterialDesignLightBackground" Color="#FFFAFAFA" />
+    <SolidColorBrush x:Key="MaterialDesignLightForeground" Color="#DD000000" />
+    <SolidColorBrush x:Key="MaterialDesignDarkBackground" Color="#FF303030" />
+    <SolidColorBrush x:Key="MaterialDesignDarkForeground" Color="#FFFAFAFA" />
+    <SolidColorBrush x:Key="MaterialDesignDarkSeparatorBackground" Color="#1F000000" />
+    <SolidColorBrush x:Key="MaterialDesignLightSeparatorBackground" Color="#1FFFFFFF" />
+
+</ResourceDictionary>

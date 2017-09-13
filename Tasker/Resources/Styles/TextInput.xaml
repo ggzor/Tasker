@@ -1,0 +1,15 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}">
+        <Setter Property="FontFamily" Value="Segoe UI Semilight"/>
+        <Setter Property="FontSize" Value="14"/>
+        
+        <Setter Property="material:HintAssist.Hint" Value="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}"/>
+        <Setter Property="material:HintAssist.FloatingScale" Value="0.9"/>
+        <Setter Property="material:HintAssist.FloatingOffset" Value="0 -20"/>
+        <Setter Property="material:HintAssist.HintOpacity" Value="0.6"/>
+        <Setter Property="material:HintAssist.IsFloating" Value="True"/>
+    </Style>
+</ResourceDictionary>
