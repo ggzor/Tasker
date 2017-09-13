@@ -17,7 +17,7 @@ namespace Tasker
     public class TaskerViewModel : ValidatableModel
     {
 
-        public static readonly string TasksPath = Directory.GetCurrentDirectory();
+        public static readonly string TasksPath = "C:/Tasker";
 
         public static string CurrentFilePath => Path.Combine(TasksPath, DateTime.Today.ToString("yyyy-MM-dd") + ".json");
 
