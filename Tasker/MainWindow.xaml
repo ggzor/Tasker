@@ -59,8 +59,6 @@
         </ListView>
 
         <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Content="Switch completed" Padding="10 5" Click="SwitchTask"
-                    IsEnabled="{Binding ElementName=List, Path=SelectedItems.Count}"/>
             <Button Content="Delete" Padding="10 5" Click="DeleteTask" Margin="5 0"
                     IsEnabled="{Binding ElementName=List, Path=SelectedItems.Count}"/>
         </StackPanel>

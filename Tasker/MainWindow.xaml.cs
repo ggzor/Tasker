@@ -94,7 +94,6 @@ namespace Tasker
             if (TryCreateTask(out var _))
             {
                 taskToEdit.Description = TaskDescription.Text;
-                taskToEdit.Changed();
 
                 await SaveChanges();
             }
@@ -118,7 +117,6 @@ namespace Tasker
             var task = List.SelectedItem as Core.Task;
 
             task.Completed = !task.Completed;
-            task.Changed();
 
             await SaveChanges();
         }

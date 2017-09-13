@@ -41,11 +41,17 @@ namespace Tasker
         public ICommand GetTodayTasksCommand { get; }
 
         public ICommand SaveTasksCommand { get; }
+        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings()
+        {
+            Formatting = Formatting.Indented
+        };
 
         public TaskerViewModel()
         {
             GetTodayTasksCommand = new DelegateCommand(async () => await GetTodayTasks());
             SaveTasksCommand = new DelegateCommand(async () => await SaveTasks());
+
+            TodayTasks.CollectionChanged += TodayTasksChanged;
 
             async void LoadTasks() => await GetTodayTasks();
 
@@ -58,6 +64,14 @@ namespace Tasker
                 Directory.CreateDirectory(TasksPath);
             }
         }
+
+        private void TodayTasksChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            e.NewItems?.OfType<Core.Task>().ForEach(t => t.PropertyChanged += TaskChanged);
+            e.OldItems?.OfType<Core.Task>().ForEach(t => t.PropertyChanged -= TaskChanged);
+        }
+
+        private void TaskChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) => SaveTasksCommand.Execute(null);
 
         public async Task GetTodayTasks()
         {
@@ -111,7 +125,7 @@ namespace Tasker
 
             try
             {
-                var text = JsonConvert.SerializeObject(TodayTasks.ToList(), Formatting.Indented);
+                var text = JsonConvert.SerializeObject(TodayTasks.ToList(), JsonSettings);
 
                 await SaveToFile(CurrentFilePath, text);
             }

@@ -1,21 +1,31 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Waf.Foundation;
 
 using Newtonsoft.Json;
 
 namespace Tasker.Core
 {
-    public class Task : INotifyPropertyChanged
+    public class Task : ValidatableModel
     {
+        private string description;
+        private bool completed;
+
+        [JsonProperty]
         public DateTime Date { get; set; } = DateTime.Now;
 
-        public string Description { get; set; }
+        [JsonProperty]
+        public string Description
+        {
+            get { return description; }
+            set { SetProperty(ref description, value); }
+        }
 
-        public bool Completed { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void Changed() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Representation)));
+        [JsonProperty]
+        public bool Completed
+        {
+            get { return completed; }
+            set { SetProperty(ref completed, value); }
+        }
 
         public override string ToString()
         {
@@ -23,8 +33,5 @@ namespace Tasker.Core
 
             return $"{Description} - {completedString}";
         }
-
-        [JsonIgnore]
-        public string Representation => ToString();
     }
 }
