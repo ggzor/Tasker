@@ -8,4 +8,5 @@
     <SolidColorBrush x:Key="MaterialDesignDarkSeparatorBackground" Color="#1F000000" />
     <SolidColorBrush x:Key="MaterialDesignLightSeparatorBackground" Color="#1FFFFFFF" />
 
+    <Style TargetType="ToolTip" BasedOn="{StaticResource MaterialDesignToolTip}"/>
 </ResourceDictionary>
