@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:core="clr-namespace:Tasker.Core;assembly=Tasker.Core"
+        xmlns:Sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Tasker"
         mc:Ignorable="d"
         GlowBrush="Black" BorderThickness="0"
@@ -18,15 +20,46 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Shadows.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+
+            <local:TaskerViewModel x:Key="ViewModel"/>
         </ResourceDictionary>
     </Window.Resources>
 
-    <material:DialogHost>
+    <material:DialogHost DialogClosing="DialogHost_DialogClosing">
+        <material:DialogHost.DialogContent>
+            <StackPanel Margin="16">
+                <TextBlock FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="16">Add a new task</TextBlock>
+                <TextBox x:Name="TaskDescription" Margin="0 8 0 0" Width="350" Tag="Description" 
+                         HorizontalAlignment="Stretch"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        IsDefault="True"
+                                        Margin="0 8 8 0"
+                                        Command="material:DialogHost.CloseDialogCommand">
+                        <Button.CommandParameter>
+                            <Sys:Boolean>True</Sys:Boolean>
+                        </Button.CommandParameter>
+                        ACCEPT
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        IsCancel="True"
+                                        Margin="0 8 8 0"
+                                        Command="material:DialogHost.CloseDialogCommand">
+                        <Button.CommandParameter>
+                            <Sys:Boolean>False</Sys:Boolean>
+                        </Button.CommandParameter>
+                        CANCEL
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </material:DialogHost.DialogContent>
+
         <material:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
             <material:DrawerHost.LeftDrawerContent>
                 <DockPanel MinWidth="212">
                     <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
-                                    DockPanel.Dock="Top" Height="64"
+                                    DockPanel.Dock="Top" Width="64" Height="64"
                                     HorizontalAlignment="Right" Margin="16 0"
                                     IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" />
                     <ListBox x:Name="DemoItemsListBox" Margin="0 16 0 16" SelectedIndex="0">
@@ -42,33 +75,79 @@
                 </DockPanel>
             </material:DrawerHost.LeftDrawerContent>
             <DockPanel>
-                <material:ColorZone Height="64" Padding="16 0" material:ShadowAssist.ShadowDepth="Depth2"
+                <material:ColorZone Height="62" material:ShadowAssist.ShadowDepth="Depth2"
                                     Mode="PrimaryMid" Background="#FF41B1E1" Foreground="White" DockPanel.Dock="Top"
                                     MouseDown="ColorZone_MouseDown">
-                    <DockPanel>
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                            <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" IsChecked="False"
-                                          x:Name="MenuToggleButton" Visibility="Collapsed"/>
-                            <TextBlock Margin="32 0" FontSize="22" Text="Tasker" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" DockPanel.Dock="Right">
-                            <Button Margin="5 0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Add task">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="56"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="16"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ToggleButton Grid.Column="1" x:Name="MenuToggleButton" IsChecked="False" Visibility="Visible"
+                                      Width="26" Height="26" Padding="0" Margin="0"
+                                      VerticalContentAlignment="Center" IsEnabled="False"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Style="{StaticResource MaterialDesignHamburgerToggleButton}" />
+
+                        <TextBlock Grid.Column="2" Text="Tasks" FontSize="20"
+                                   VerticalAlignment="Center"/>
+
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Margin="5 0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Add task"
+                                    Command="{x:Static material:DialogHost.OpenDialogCommand}">
                                 <material:PackIcon Width="20" Height="20" Foreground="White" Kind="Plus"/>
                             </Button>
-                            
+
                             <Button Margin="5 0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Hide" Visibility="Collapsed">
                                 <material:PackIcon Width="20" Height="20" Foreground="White" Kind="ArrowCompress"/>
                             </Button>
-                            
+
                             <material:PopupBox PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
                                 <StackPanel>
                                     <Button Content="Close" Click="CloseWindow"/>
                                 </StackPanel>
                             </material:PopupBox>
                         </StackPanel>
-                        <StackPanel/>
-                    </DockPanel>
+                    </Grid>
                 </material:ColorZone>
+
+                <ScrollViewer>
+                    <StackPanel Name="MainContainer" DataContext="{StaticResource ViewModel}">
+                        <TextBlock Margin="16 8" Text="Today" FontFamily="Segoe UI" FontSize="16"
+                                   Opacity="0.6"/>
+
+                        <ListView Name="List" ItemsSource="{Binding TodayTasks}"
+                          SelectionMode="Single">
+                            <ListView.ItemTemplate>
+                                <DataTemplate DataType="{x:Type core:Task}">
+                                    <Grid Name="Container" Height="40">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="13"/>
+                                            <ColumnDefinition Width="56"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="6"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox Grid.Column="1" IsChecked="{Binding Completed}" 
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center">
+                                            <CheckBox.RenderTransform>
+                                                <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
+                                            </CheckBox.RenderTransform>
+                                        </CheckBox>
+
+                                        <TextBlock Grid.Column="2" FontFamily="Segoe UI Semilight" FontSize="16"
+                                                   Text="{Binding Description}"
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </ScrollViewer>
             </DockPanel>
         </material:DrawerHost>
     </material:DialogHost>

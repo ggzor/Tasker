@@ -20,9 +20,13 @@ namespace Tasker
     /// </summary>
     public partial class MainView : MetroWindow
     {
+        public TaskerViewModel ViewModel { get; }
+
         public MainView()
         {
             InitializeComponent();
+
+            ViewModel = MainContainer.DataContext as TaskerViewModel;
         }
 
         private void ColorZone_MouseDown(object sender, MouseButtonEventArgs e)
@@ -37,5 +41,25 @@ namespace Tasker
         }
 
         private void CloseWindow(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+
+        private async void DialogHost_DialogClosing(object sender, MaterialDesignThemes.Wpf.DialogClosingEventArgs eventArgs)
+        {
+            bool create = eventArgs.Parameter as bool? ?? false;
+
+            if (create)
+            {
+                var task = new Core.Task() { Description = TaskDescription.Text };
+
+                ViewModel.TodayTasks.Add(task);
+
+                try
+                {
+                    await ViewModel.SaveTasks();
+
+                    TaskDescription.Text = "";
+                }
+                catch { }
+            }
+        }
     }
 }
